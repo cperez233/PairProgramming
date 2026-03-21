@@ -22,10 +22,10 @@ class SessionController extends Controller
         $code = strtoupper(Str::random(6));
 
         PairSession::create([
-            'code'      => $code,
-            'driver'    => $request->input('username'),
+            'code' => $code,
+            'driver' => $request->input('username'),
             'navigator' => null,
-            'status'    => 'waiting',
+            'status' => 'waiting',
         ]);
 
         session(['username_' . $code => $request->input('username')]);
@@ -36,24 +36,24 @@ class SessionController extends Controller
     public function join(Request $request)
     {
         $request->validate([
-            'code'     => ['required', 'string', 'size:6'],
+            'code' => ['required', 'string', 'size:6'],
             'username' => ['required', 'string', 'max:30', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
         ]);
 
-        $code    = strtoupper($request->input('code'));
+        $code = strtoupper($request->input('code'));
         $session = PairSession::where('code', $code)->first();
 
-        if (! $session) {
-            return back()->withErrors(['code' => 'Session not found. Double-check the code.'])->withInput();
+        if (!$session) {
+            return back()->withErrors(['code' => __('Session not found. Double-check the code.')])->withInput();
         }
 
         if ($session->status === 'active') {
-            return back()->withErrors(['code' => 'This session is already full.'])->withInput();
+            return back()->withErrors(['code' => __('This session is already full.')])->withInput();
         }
 
         $session->update([
             'navigator' => $request->input('username'),
-            'status'    => 'active',
+            'status' => 'active',
         ]);
 
         session(['username_' . $code => $request->input('username')]);
@@ -63,18 +63,24 @@ class SessionController extends Controller
 
     public function room(string $code)
     {
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         $myName = session('username_' . $code);
         $myRole = $this->resolveRole($session, $myName);
 
-        return view('pair.room', compact('session', 'myRole', 'myName'));
+        $lgConfig = [
+            'url' => env('LANGRAPH_API_URL'),
+            'key' => env('LANGRAPH_API_KEY'),
+            'agent_id' => env('LANGRAPH_AGENT_ID'),
+        ];
+
+        return view('pair.room', compact('session', 'myRole', 'myName', 'lgConfig'));
     }
 
     public function swap(string $code)
     {
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         [$session->driver, $session->navigator] = [$session->navigator, $session->driver];
@@ -86,19 +92,19 @@ class SessionController extends Controller
     /** Polling de estado de la sesión (roles en tiempo real) */
     public function poll(Request $request, string $code)
     {
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         $myName = $request->query('name', '');
         $myRole = $this->resolveRole($session, $myName);
 
         return response()->json([
-            'driver'      => $session->driver,
-            'navigator'   => $session->navigator,
-            'status'      => $session->status,
-            'myRole'      => $myRole,
-            'thread_id'   => $session->thread_id,
-            'chat_history'=> $session->chat_history ?? [],
+            'driver' => $session->driver,
+            'navigator' => $session->navigator,
+            'status' => $session->status,
+            'myRole' => $myRole,
+            'thread_id' => $session->thread_id,
+            'chat_history' => $session->chat_history ?? [],
         ]);
     }
 
@@ -110,11 +116,11 @@ class SessionController extends Controller
     {
         $request->validate(['thread_id' => ['required', 'string', 'max:100']]);
 
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         // Solo guardar si todavía no tiene uno (el primero que llega gana)
-        if (! $session->thread_id) {
+        if (!$session->thread_id) {
             $session->update(['thread_id' => $request->input('thread_id')]);
         }
 
@@ -130,7 +136,7 @@ class SessionController extends Controller
     {
         $request->validate(['history' => ['required', 'array']]);
 
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         $session->update(['chat_history' => $request->input('history')]);
@@ -144,11 +150,11 @@ class SessionController extends Controller
      */
     public function loadChat(string $code)
     {
-        $code    = strtoupper($code);
+        $code = strtoupper($code);
         $session = PairSession::where('code', $code)->firstOrFail();
 
         return response()->json([
-            'history'   => $session->chat_history ?? [],
+            'history' => $session->chat_history ?? [],
             'thread_id' => $session->thread_id,
         ]);
     }
@@ -157,9 +163,12 @@ class SessionController extends Controller
 
     private function resolveRole(PairSession $session, ?string $name): ?string
     {
-        if (! $name) return null;
-        if ($session->driver    === $name) return 'driver';
-        if ($session->navigator === $name) return 'navigator';
+        if (!$name)
+            return null;
+        if ($session->driver === $name)
+            return 'driver';
+        if ($session->navigator === $name)
+            return 'navigator';
         return null;
     }
 }

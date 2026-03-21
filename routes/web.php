@@ -12,5 +12,17 @@ Route::post('/room/{code}/thread', [SessionController::class, 'saveThread'])->na
 Route::post('/room/{code}/chat',   [SessionController::class, 'saveChat'])->name('pair.chat.save');
 Route::get('/room/{code}/chat',    [SessionController::class, 'loadChat'])->name('pair.chat.load');
 
+<<<<<<< Updated upstream
 Route::match(['post','patch'], '/room/{code}/swap', [SessionController::class, 'swap'])->name('pair.swap');
 Route::get('/room/{code}', [SessionController::class, 'room'])->name('pair.room');
+=======
+Route::match(['post', 'patch'], '/room/{code}/swap', [SessionController::class, 'swap'])->name('pair.swap');
+Route::get('/room/{code}', [SessionController::class, 'room'])->name('pair.room');
+
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'es'])) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
+>>>>>>> Stashed changes

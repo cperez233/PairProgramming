@@ -435,15 +435,36 @@
 
 <div class="wrapper">
 
+<<<<<<< Updated upstream
+=======
+    <nav class="auth-nav" aria-label="Account">
+        <div class="lang-switch" style="margin-right: auto; display: flex; gap: 8px; align-items: center; border:none; padding: 0;">
+            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--green)' : 'var(--text-dim)' }}; border:none; text-decoration: none; font-weight: bold; font-size: 0.8rem; padding: 0; background: transparent;">EN</a>
+            <span style="color: var(--border);">/</span>
+            <a href="{{ route('lang.switch', 'es') }}" style="color: {{ app()->getLocale() === 'es' ? 'var(--green)' : 'var(--text-dim)' }}; border:none; text-decoration: none; font-weight: bold; font-size: 0.8rem; padding: 0; background: transparent;">ES</a>
+        </div>
+        @auth
+            <span class="auth-nav-user">{{ auth()->user()->name }}</span>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
+                @csrf
+                <button type="submit">{{ __('Log out') }}</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">{{ __('Log in') }}</a>
+            <a href="{{ route('register') }}" class="auth-nav-primary">{{ __('Register') }}</a>
+        @endauth
+    </nav>
+
+>>>>>>> Stashed changes
     <header>
         <div class="logo">
             <div class="logo-icon">⌨</div>
             <span class="logo-name">Pair<span>Sync</span></span>
         </div>
-        <h1>Code together,<br><em>think together.</em></h1>
+        <h1>{!! __('Code together,<br><em>think together.</em>') !!}</h1>
         <p class="subtitle">
-            Real-time pair programming sessions.
-            One driver, one navigator — both in sync.
+            {{ __('Real-time pair programming sessions.') }}<br>
+            {{ __('One driver, one navigator — both in sync.') }}
         </p>
     </header>
 
@@ -460,14 +481,14 @@
 
             <div class="card-badge badge-create">
                 <span class="badge-dot"></span>
-                Start session
+                {{ __('Start session') }}
             </div>
 
-            <h2>Create a Room</h2>
-            <p>Generate a unique 6-character code and wait for your partner to join. You'll be the <strong>Driver</strong>.</p>
+            <h2>{{ __('Create a Room') }}</h2>
+            <p>{{ __('Generate a unique 6-character code and wait for your partner to join. You\'ll be the') }} <strong>{{ __('Driver') }}</strong>.</p>
 
             <div class="role-pill">
-                🧑‍💻 <strong>Your role:</strong>&nbsp;Driver — writes the code
+                🧑‍💻 <strong>{{ __('Your role:') }}</strong>&nbsp;{{ __('Driver — writes the code') }}
             </div>
 
             @if ($errors->hasBag('create') || (!$errors->hasBag('join') && $errors->any()))
@@ -479,12 +500,12 @@
             <form method="POST" action="{{ route('pair.create') }}" id="form-create">
                 @csrf
                 <div class="form-group">
-                    <label for="username-create">Your display name</label>
+                    <label for="username-create">{{ __('Your display name') }}</label>
                     <input
                         type="text"
                         id="username-create"
                         name="username"
-                        placeholder="e.g. alex_dev"
+                        placeholder="{{ __('e.g. alex_dev') }}"
                         maxlength="30"
                         autocomplete="off"
                         value="{{ old('username') }}"
@@ -495,7 +516,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-create">
-                    ⚡ Generate Room Code
+                    {{ __('⚡ Generate Room Code') }}
                 </button>
             </form>
         </div>
@@ -511,14 +532,14 @@
 
             <div class="card-badge badge-join">
                 <span class="badge-dot"></span>
-                Join session
+                {{ __('Join session') }}
             </div>
 
-            <h2>Join a Room</h2>
-            <p>Enter the 6-character code your partner shared. You'll be the <strong>Navigator</strong>.</p>
+            <h2>{{ __('Join a Room') }}</h2>
+            <p>{{ __('Enter the 6-character code your partner shared. You\'ll be the') }} <strong>{{ __('Navigator') }}</strong>.</p>
 
             <div class="role-pill">
-                🧭 <strong>Your role:</strong>&nbsp;Navigator — guides the strategy
+                🧭 <strong>{{ __('Your role:') }}</strong>&nbsp;{{ __('Navigator — guides the strategy') }}
             </div>
 
             @if ($errors->hasBag('join'))
@@ -530,7 +551,7 @@
             <form method="POST" action="{{ route('pair.join') }}" id="form-join">
                 @csrf
                 <div class="form-group">
-                    <label for="session-code">Session code</label>
+                    <label for="session-code">{{ __('Session code') }}</label>
                     <input
                         type="text"
                         id="session-code"
@@ -547,12 +568,12 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="username-join">Your display name</label>
+                    <label for="username-join">{{ __('Your display name') }}</label>
                     <input
                         type="text"
                         id="username-join"
                         name="username"
-                        placeholder="e.g. sam_navigator"
+                        placeholder="{{ __('e.g. sam_navigator') }}"
                         maxlength="30"
                         autocomplete="off"
                         value="{{ old('username') }}"
@@ -563,7 +584,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-join">
-                    🔗 Join Session
+                    {{ __('🔗 Join Session') }}
                 </button>
             </form>
         </div>
@@ -575,20 +596,20 @@
         <div class="role-item">
             <div class="role-icon icon-driver">🧑‍💻</div>
             <div class="role-desc">
-                <h3>Driver</h3>
-                <p>Controls the keyboard. Focuses on the tactical implementation of the immediate task.</p>
+                <h3>{{ __('Driver') }}</h3>
+                <p>{{ __('Controls the keyboard. Focuses on the tactical implementation of the immediate task.') }}</p>
             </div>
         </div>
         <div class="role-item">
             <div class="role-icon icon-navigator">🧭</div>
             <div class="role-desc">
-                <h3>Navigator</h3>
-                <p>Reviews the code in real time, thinks about direction, architecture, and catches bugs.</p>
+                <h3>{{ __('Navigator') }}</h3>
+                <p>{{ __('Reviews the code in real time, thinks about direction, architecture, and catches bugs.') }}</p>
             </div>
         </div>
     </div>
 
-    <footer>PairSync · real-time collaborative coding</footer>
+    <footer>{{ __('PairSync · real-time collaborative coding') }}</footer>
 
 </div>
 

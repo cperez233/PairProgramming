@@ -302,14 +302,19 @@
     <span class="topbar-logo">Pair<span>Sync</span></span>
     <div class="topbar-divider"></div>
     <div class="session-badge">
-        <span class="session-label">Room</span>
+        <span class="session-label">{{ __('Room') }}</span>
         <span class="session-code">{{ $session->code }}</span>
         <button class="copy-btn" onclick="copyCode()">⧉</button>
     </div>
     <div class="topbar-spacer"></div>
+    <div class="lang-switch" style="margin-right: 15px; display: flex; gap: 8px; align-items: center;">
+        <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--green)' : 'var(--text-dim)' }}; text-decoration: none; font-weight: bold; font-size: 0.8rem;">EN</a>
+        <span style="color: var(--border);">/</span>
+        <a href="{{ route('lang.switch', 'es') }}" style="color: {{ app()->getLocale() === 'es' ? 'var(--green)' : 'var(--text-dim)' }}; text-decoration: none; font-weight: bold; font-size: 0.8rem;">ES</a>
+    </div>
     <span class="status-pill {{ $session->status === 'waiting' ? 'pill-waiting' : 'pill-active' }}" id="status-pill">
         <span class="pill-dot"></span>
-        <span id="status-text">{{ $session->status === 'waiting' ? 'Waiting for partner' : 'Session active' }}</span>
+        <span id="status-text">{{ $session->status === 'waiting' ? __('Waiting for partner') : __('Session active') }}</span>
     </span>
 </header>
 
@@ -318,32 +323,32 @@
 
         <div class="role-banner {{ $myRole === 'driver' ? 'banner-driver' : ($myRole === 'navigator' ? 'banner-navigator' : 'banner-unknown') }}" id="role-banner">
             @if($myRole === 'driver')
-                🧑‍💻 <strong>You are the Driver</strong> — focus on writing the code.
+                🧑‍💻 <strong>{{ __('You are the Driver') }}</strong> — {{ __('focus on writing the code.') }}
             @elseif($myRole === 'navigator')
-                🧭 <strong>You are the Navigator</strong> — guide, review, and think ahead.
+                🧭 <strong>{{ __('You are the Navigator') }}</strong> — {{ __('guide, review, and think ahead.') }}
             @else
-                👀 Reconnecting…
+                👀 {{ __('Reconnecting…') }}
             @endif
         </div>
 
         <div class="participants">
             <div class="participant-card pc-driver {{ $myRole === 'driver' ? 'is-me' : '' }}" id="card-driver">
-                <div class="pc-role-label">🧑‍💻 Driver</div>
+                <div class="pc-role-label">🧑‍💻 {{ __('Driver') }}</div>
                 <div class="pc-avatar">🧑‍💻</div>
                 <div class="pc-name {{ $session->driver ? '' : 'empty' }}" id="driver-name">
-                    {{ $session->driver ?? 'waiting...' }}
-                    @if($myRole === 'driver')<span class="you-tag">You</span>@endif
+                    {{ $session->driver ?? __('waiting...') }}
+                    @if($myRole === 'driver')<span class="you-tag">{{ __('You') }}</span>@endif
                 </div>
-                <div class="pc-sub">Writes the code</div>
+                <div class="pc-sub">{{ __('Writes the code') }}</div>
             </div>
             <div class="participant-card pc-navigator {{ $myRole === 'navigator' ? 'is-me' : '' }}" id="card-navigator">
-                <div class="pc-role-label">🧭 Navigator</div>
+                <div class="pc-role-label">🧭 {{ __('Navigator') }}</div>
                 <div class="pc-avatar">🧭</div>
                 <div class="pc-name {{ $session->navigator ? '' : 'empty' }}" id="navigator-name">
-                    {{ $session->navigator ?? 'waiting...' }}
-                    @if($myRole === 'navigator')<span class="you-tag">You</span>@endif
+                    {{ $session->navigator ?? __('waiting...') }}
+                    @if($myRole === 'navigator')<span class="you-tag">{{ __('You') }}</span>@endif
                 </div>
-                <div class="pc-sub" id="navigator-sub">{{ $session->navigator ? 'Guides the strategy' : 'Share your code →' }}</div>
+                <div class="pc-sub" id="navigator-sub">{{ $session->navigator ? __('Guides the strategy') : __('Share your code →') }}</div>
             </div>
         </div>
 
@@ -351,29 +356,29 @@
             @if($session->status === 'waiting')
             <div class="waiting-state">
                 <div class="waiting-spinner"></div>
-                <h3>Waiting for your navigator...</h3>
-                <p>Share this code with your partner.</p>
+                <h3>{{ __('Waiting for your navigator...') }}</h3>
+                <p>{{ __('Share this code with your partner.') }}</p>
                 <div class="share-code-box">
                     <span class="code">{{ $session->code }}</span>
                     <button class="copy-btn" onclick="copyCode()" style="font-size:1.1rem;">⧉</button>
                 </div>
             </div>
             @else
-            <h3>⚡ Session in progress</h3>
+            <h3>⚡ {{ __('Session in progress') }}</h3>
             <ul class="info-list">
-                <li><strong>Driver</strong> — focus on the code at hand. Type, implement, execute.</li>
-                <li><strong>Navigator</strong> — watch for bugs, think ahead, suggest directions.</li>
-                <li>Swap roles every 15–25 minutes to share ownership.</li>
-                <li>Communicate continuously — narrate what you're doing and why.</li>
+                <li><strong>{{ __('Driver') }}</strong> — {{ __('Driver — focus on the code at hand. Type, implement, execute.') }}</li>
+                <li><strong>{{ __('Navigator') }}</strong> — {{ __('Navigator — watch for bugs, think ahead, suggest directions.') }}</li>
+                <li>{{ __('Swap roles every 15–25 minutes to share ownership.') }}</li>
+                <li>{{ __('Communicate continuously — narrate what you\'re doing and why.') }}</li>
             </ul>
             @endif
         </div>
 
         <div class="actions" id="actions">
             @if($session->status === 'active')
-            <button class="btn btn-swap" id="btn-swap" style="flex:1;" onclick="swapRoles(this)">🔄 Swap Roles</button>
+            <button class="btn btn-swap" id="btn-swap" style="flex:1;" onclick="swapRoles(this)">🔄 {{ __('Swap Roles') }}</button>
             @endif
-            <a href="{{ route('pair.index') }}" class="btn btn-leave">← Leave</a>
+            <a href="{{ route('pair.index') }}" class="btn btn-leave">← {{ __('Leave') }}</a>
         </div>
 
     </div>
@@ -382,7 +387,7 @@
 <!-- ══ CHATBOT ══════════════════════════════════════════════════════ -->
 
 <!-- Botón flotante -->
-<button id="chat-fab" onclick="toggleChat()" title="Ask the Android Kotlin Tutor">
+<button id="chat-fab" onclick="toggleChat()" title="{{ __('Ask the Android Kotlin Tutor') }}">
     🤖
     <span class="badge" id="chat-badge"></span>
 </button>
@@ -392,8 +397,8 @@
     <div class="chat-header">
         <div class="chat-header-icon">🤖</div>
         <div class="chat-header-info">
-            <div class="chat-header-name">Android Kotlin Tutor</div>
-            <div class="chat-header-status">online · shared session</div>
+            <div class="chat-header-name">{{ __('Android Kotlin Tutor') }}</div>
+            <div class="chat-header-status">{{ __('online · shared session') }}</div>
         </div>
         <button class="chat-close" onclick="toggleChat()">✕</button>
     </div>
@@ -401,26 +406,47 @@
     <div id="chat-messages">
         <div class="chat-empty" id="chat-empty">
             <div class="chat-empty-icon">🤖</div>
-            <h4>Android Kotlin Tutor</h4>
-            <p>Ask me anything about Android or Kotlin. Both of you can see this conversation.</p>
+            <h4>{{ __('Android Kotlin Tutor') }}</h4>
+            <p>{{ __('Ask me anything about Android or Kotlin. Both of you can see this conversation.') }}</p>
         </div>
     </div>
 
     <div class="chat-input-area">
         <textarea
             id="chat-input"
-            placeholder="Ask about Kotlin, Android, Jetpack..."
+            placeholder="{{ __('Ask about Kotlin, Android, Jetpack...') }}"
             rows="1"
             onkeydown="handleKey(event)"
             oninput="autoResize(this)"
         ></textarea>
-        <button id="chat-send" onclick="sendMessage()" title="Send">➤</button>
+        <button id="chat-send" onclick="sendMessage()" title="{{ __('Send') }}">➤</button>
     </div>
 </div>
 
-<div id="toast">Copied!</div>
+<div id="toast">{{ __('Copied!') }}</div>
 
 <script>
+    /* ── Traducciones ──────────────────────────────────────────────── */
+    const trans = {
+        driverRole: @json(__('You are the Driver')),
+        driverDesc: @json(__('focus on writing the code.')),
+        navigatorRole: @json(__('You are the Navigator')),
+        navigatorDesc: @json(__('guide, review, and think ahead.')),
+        sessionActive: @json(__('Session active')),
+        waitingPartner: @json(__('Waiting for partner')),
+        swapRoles: @json(__('Swap Roles')),
+        swapping: @json(__('Swapping...')),
+        guidesStrategy: @json(__('Guides the strategy')),
+        shareCode: @json(__('Share your code →')),
+        waiting: @json(__('waiting...')),
+        you: @json(__('You')),
+        sessionProgress: @json(__('Session in progress')),
+        driverTip: @json(__('Driver — focus on the code at hand. Type, implement, execute.')),
+        navigatorTip: @json(__('Navigator — watch for bugs, think ahead, suggest directions.')),
+        swapTip: @json(__('Swap roles every 15–25 minutes to share ownership.')),
+        commTip: @json(__('Communicate continuously — narrate what you\'re doing and why.'))
+    };
+
     /* ── LangGraph ─────────────────────────────────────────────────── */
     const LG_URL   = '{{ $lgConfig["url"] }}';
     const LG_KEY   = '{{ $lgConfig["key"] }}';
@@ -450,34 +476,34 @@
         setName('driver-name',    s.driver,    s.myRole === 'driver');
         setName('navigator-name', s.navigator, s.myRole === 'navigator');
         document.getElementById('navigator-sub').textContent =
-            s.navigator ? 'Guides the strategy' : 'Share your code →';
+            s.navigator ? trans.guidesStrategy : trans.shareCode;
         document.getElementById('card-driver').classList.toggle('is-me',    s.myRole === 'driver');
         document.getElementById('card-navigator').classList.toggle('is-me', s.myRole === 'navigator');
         const banner = document.getElementById('role-banner');
         if (s.myRole === 'driver') {
             banner.className = 'role-banner banner-driver';
-            banner.innerHTML = '🧑‍💻 <strong>You are the Driver</strong> — focus on writing the code.';
+            banner.innerHTML = `🧑‍💻 <strong>${trans.driverRole}</strong> — ${trans.driverDesc}`;
         } else if (s.myRole === 'navigator') {
             banner.className = 'role-banner banner-navigator';
-            banner.innerHTML = '🧭 <strong>You are the Navigator</strong> — guide, review, and think ahead.';
+            banner.innerHTML = `🧭 <strong>${trans.navigatorRole}</strong> — ${trans.navigatorDesc}`;
         }
         const pill = document.getElementById('status-pill');
         pill.className = 'status-pill ' + (s.status === 'active' ? 'pill-active' : 'pill-waiting');
         document.getElementById('status-text').textContent =
-            s.status === 'active' ? 'Session active' : 'Waiting for partner';
+            s.status === 'active' ? trans.sessionActive : trans.waitingPartner;
         if (s.status === 'active' && state.status === 'waiting') {
             document.getElementById('info-box').innerHTML = `
-                <h3>⚡ Session in progress</h3>
+                <h3>⚡ ${trans.sessionProgress}</h3>
                 <ul class="info-list">
-                    <li><strong>Driver</strong> — focus on the code at hand.</li>
-                    <li><strong>Navigator</strong> — watch for bugs, think ahead.</li>
-                    <li>Swap roles every 15–25 minutes.</li>
-                    <li>Communicate continuously.</li>
+                    <li><strong>{{ __('Driver') }}</strong> — ${trans.driverTip}</li>
+                    <li><strong>{{ __('Navigator') }}</strong> — ${trans.navigatorTip}</li>
+                    <li>${trans.swapTip}</li>
+                    <li>${trans.commTip}</li>
                 </ul>`;
             if (!document.getElementById('btn-swap')) {
                 const btn = document.createElement('button');
                 btn.id = 'btn-swap'; btn.className = 'btn btn-swap'; btn.style = 'flex:1;';
-                btn.textContent = '🔄 Swap Roles';
+                btn.textContent = `🔄 ${trans.swapRoles}`;
                 btn.onclick = function () { swapRoles(this); };
                 document.getElementById('actions').insertBefore(btn, document.getElementById('actions').firstChild);
             }
@@ -507,8 +533,8 @@
     function setName(id, name, isMe) {
         const el = document.getElementById(id);
         el.className = 'pc-name' + (name ? '' : ' empty');
-        el.textContent = name ?? 'waiting...';
-        if (isMe && name) { const t = document.createElement('span'); t.className = 'you-tag'; t.textContent = 'You'; el.appendChild(t); }
+        el.textContent = name ?? trans.waiting;
+        if (isMe && name) { const t = document.createElement('span'); t.className = 'you-tag'; t.textContent = trans.you; el.appendChild(t); }
     }
 
     async function poll() {
@@ -520,12 +546,12 @@
     poll(); setInterval(poll, 2000);
 
     async function swapRoles(btn) {
-        btn.disabled = true; btn.textContent = '⏳ Swapping...';
+        btn.disabled = true; btn.textContent = `⏳ ${trans.swapping}`;
         try {
             await fetch('/room/' + ROOM_CODE + '/swap', { method: 'POST', headers: APP_HEADERS });
             await poll();
         } catch (e) { console.warn('[swap]', e); }
-        finally { btn.disabled = false; btn.textContent = '🔄 Swap Roles'; }
+        finally { btn.disabled = false; btn.textContent = `🔄 ${trans.swapRoles}`; }
     }
 
     function copyCode() {
