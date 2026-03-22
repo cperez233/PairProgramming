@@ -435,8 +435,6 @@
 
 <div class="wrapper">
 
-<<<<<<< Updated upstream
-=======
     <nav class="auth-nav" aria-label="Account">
         <div class="lang-switch" style="margin-right: auto; display: flex; gap: 8px; align-items: center; border:none; padding: 0;">
             <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--green)' : 'var(--text-dim)' }}; border:none; text-decoration: none; font-weight: bold; font-size: 0.8rem; padding: 0; background: transparent;">EN</a>
@@ -447,24 +445,18 @@
             <span class="auth-nav-user">{{ auth()->user()->name }}</span>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
                 @csrf
-                <button type="submit">{{ __('Log out') }}</button>
+                <button type="submit" style="background:none; border:none; color:var(--text-dim); font-size: 0.85rem; font-weight: 600; cursor:pointer;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-dim)'">{{ __('Log out') }}</button>
             </form>
-        @else
-            <a href="{{ route('login') }}">{{ __('Log in') }}</a>
-            <a href="{{ route('register') }}" class="auth-nav-primary">{{ __('Register') }}</a>
         @endauth
     </nav>
-
->>>>>>> Stashed changes
     <header>
-        <div class="logo">
+        <a href="{{ url('/') }}" class="logo" style="text-decoration: none;">
             <div class="logo-icon">⌨</div>
             <span class="logo-name">Pair<span>Sync</span></span>
-        </div>
-        <h1>{!! __('Code together,<br><em>think together.</em>') !!}</h1>
+        </a>
+        <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 8px;">{{ __('Dashboard') }}</h1>
         <p class="subtitle">
-            {{ __('Real-time pair programming sessions.') }}<br>
-            {{ __('One driver, one navigator — both in sync.') }}
+            {{ __('Create a new room or join an existing session.') }}
         </p>
     </header>
 

@@ -299,7 +299,7 @@
 <body>
 
 <header class="topbar">
-    <span class="topbar-logo">Pair<span>Sync</span></span>
+    <a href="{{ route('pair.index') }}" class="topbar-logo" style="text-decoration:none;">Pair<span>Sync</span></a>
     <div class="topbar-divider"></div>
     <div class="session-badge">
         <span class="session-label">{{ __('Room') }}</span>
