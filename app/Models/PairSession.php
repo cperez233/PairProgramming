@@ -12,7 +12,12 @@ class PairSession extends Model
         'navigator',
         'status',
         'thread_id',
-        'chat_history',    ];
+        'chat_history',
+        'code_content',
+        'cursors',
+    ];
     protected $casts = [
-        'chat_history' => 'array',    ];
+        'chat_history' => 'array',
+        'cursors' => 'array',
+    ];
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -18,21 +19,28 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class , 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/challenges', [ChallengeController::class , 'index'])->name('challenges.index');
+    Route::get('/challenges/{id}', [ChallengeController::class , 'show'])->name('challenges.show');
+    Route::get('/challenges/{id}/lesson/{lesson}', [ChallengeController::class , 'lesson'])->name('challenges.lesson');
     Route::get('/app', [SessionController::class , 'index'])->name('pair.index');
     Route::post('/session/create', [SessionController::class , 'create'])->name('pair.create');
     Route::post('/session/join', [SessionController::class , 'join'])->name('pair.join');
 
     Route::match (['post', 'patch'], '/room/{code}/swap', [SessionController::class , 'swap'])->name('pair.swap');
     Route::get('/room/{code}', [SessionController::class , 'room'])->name('pair.room');
+
+    // Editor & execution endpoints
+    Route::post('/room/{code}/code', [SessionController::class , 'saveCode'])->name('pair.code.save');
+    Route::post('/room/{code}/run', [SessionController::class , 'executeCode'])->name('pair.code.run');
+    Route::post('/room/{code}/cursor', [SessionController::class , 'saveCursor'])->name('pair.cursor.save');
+
+    // Polling & chat
+    Route::get('/room/{code}/poll', [SessionController::class , 'poll'])->name('pair.poll');
+    Route::get('/room/{code}/cursors', [SessionController::class , 'pollCursors'])->name('pair.cursors');
+    Route::post('/room/{code}/thread', [SessionController::class , 'saveThread'])->name('pair.thread');
+    Route::post('/room/{code}/chat', [SessionController::class , 'saveChat'])->name('pair.chat.save');
+    Route::get('/room/{code}/chat', [SessionController::class , 'loadChat'])->name('pair.chat.load');
 });
-
-Route::get('/room/{code}/poll', [SessionController::class , 'poll'])->name('pair.poll');
-Route::post('/room/{code}/thread', [SessionController::class , 'saveThread'])->name('pair.thread');
-Route::post('/room/{code}/chat', [SessionController::class , 'saveChat'])->name('pair.chat.save');
-Route::get('/room/{code}/chat', [SessionController::class , 'loadChat'])->name('pair.chat.load');
-
-Route::match (['post', 'patch'], '/room/{code}/swap', [SessionController::class , 'swap'])->name('pair.swap');
-Route::get('/room/{code}', [SessionController::class , 'room'])->name('pair.room');
 
 Route::get('/lang/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'es'])) {

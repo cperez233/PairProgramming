@@ -371,7 +371,7 @@
         </div>
         
         @auth
-            <a href="{{ route('pair.index') }}" class="btn-outline">{{ __('Dashboard') }}</a>
+            <a href="{{ route('challenges.index') }}" class="btn-outline">{{ __('Dashboard') }}</a>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
                 @csrf
                 <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;">{{ __('Log out') }}</button>
@@ -395,7 +395,7 @@
     
     <div class="cta-group">
         @auth
-            <a href="{{ route('pair.index') }}" class="btn-primary btn-large">{{ __('Open App') }} &rarr;</a>
+            <a href="{{ route('challenges.index') }}" class="btn-primary btn-large">{{ __('Open App') }} &rarr;</a>
         @else
             <a href="{{ route('register') }}" class="btn-primary btn-large">{{ __('Get Started') }} &rarr;</a>
             <a href="{{ route('login') }}" class="btn-secondary">{{ __('Log in') }}</a>
