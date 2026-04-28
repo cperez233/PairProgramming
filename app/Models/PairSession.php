@@ -13,11 +13,13 @@ class PairSession extends Model
         'status',
         'thread_id',
         'chat_history',
+        'participant_chat',
         'code_content',
         'cursors',
     ];
     protected $casts = [
         'chat_history' => 'array',
+        'participant_chat' => 'array',
         'cursors' => 'array',
     ];
 }

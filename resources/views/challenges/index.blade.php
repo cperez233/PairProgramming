@@ -552,6 +552,9 @@
 
         @auth
             <span class="nav-user">{{ auth()->user()->name }}</span>
+            @if(auth()->user()->isTeacher())
+                <a href="{{ route('courses.index') }}" class="btn-nav-outline">{{ __('Manage Courses') }}</a>
+            @endif
             <a href="{{ route('pair.index') }}" class="btn-nav-outline">{{ __('Sessions') }}</a>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
                 @csrf
@@ -603,7 +606,7 @@
                     {{ __($challenge['level']) }}
                 </span>
                 <span class="lessons-count">
-                    📚 {{ $challenge['lessons'] }} {{ __('lessons') }}
+                    📚 {{ $challenge->lessons_count }} {{ __('lessons') }}
                 </span>
             </div>
 

@@ -538,7 +538,7 @@
 <section class="lessons-section">
     <div class="lessons-header">
         <h2>{{ __('Course Lessons') }}</h2>
-        <span class="lessons-count-label">{{ count(array_filter($lessons, fn($l) => $l['available'])) }}/{{ count($lessons) }} {{ __('available') }}</span>
+        <span class="lessons-count-label">{{ $lessons->where('available', true)->count() }}/{{ $lessons->count() }} {{ __('available') }}</span>
     </div>
 
     <div class="lesson-list" id="lessonList">

@@ -114,6 +114,7 @@ class SessionController extends Controller
             'myRole' => $myRole,
             'thread_id' => $session->thread_id,
             'chat_history' => $session->chat_history ?? [],
+            'participant_chat' => $session->participant_chat ?? [],
             'code_content' => $session->code_content,
             'cursors' => $session->cursors ?? [],
         ]);
@@ -283,6 +284,35 @@ class SessionController extends Controller
             'history' => $session->chat_history ?? [],
             'thread_id' => $session->thread_id,
         ]);
+    }
+
+    /**
+     * Guarda un mensaje en el chat de participantes.
+     */
+    public function saveParticipantChat(Request $request, string $code)
+    {
+        $request->validate(['text' => ['required', 'string', 'max:1000']]);
+
+        $code = strtoupper($code);
+        $session = PairSession::where('code', $code)->firstOrFail();
+
+        $myName = session('username_' . $code);
+        if (!$myName) return response()->json(['error' => 'Not authenticated in room'], 403);
+
+        $chat = $session->participant_chat ?? [];
+        $chat[] = [
+            'sender' => $myName,
+            'text' => $request->input('text')
+        ];
+
+        // Limitar a los últimos 100 mensajes para evitar que el JSON crezca demasiado
+        if (count($chat) > 100) {
+            $chat = array_slice($chat, -100);
+        }
+
+        $session->update(['participant_chat' => $chat]);
+
+        return response()->json(['ok' => true]);
     }
 
     // ── helpers ──────────────────────────────────────────────────────
