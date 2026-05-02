@@ -486,6 +486,92 @@
         .lesson-card.locked.visible {
             opacity: 0.5;
         }
+
+        /* ── ENROLLMENT ── */
+        .enroll-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .btn-enroll {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn-enroll:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+
+        .btn-unenroll {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-unenroll:hover {
+            border-color: rgba(239,68,68,0.4);
+            color: #f87171;
+            background: rgba(239,68,68,0.08);
+        }
+
+        .enrolled-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 100px;
+            color: #34d399;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .enrolled-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-lo);
+        }
+
+        .alert-success {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 16px auto 0;
+            padding: 14px 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 10px;
+            color: #34d399;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -531,8 +617,35 @@
             <span class="label">⏱️</span>
             <span class="value">~{{ collect($lessons)->pluck('duration')->map(fn($d) => (int) $d)->sum() }} min {{ __('total') }}</span>
         </div>
+        <div class="hero-meta-item">
+            <span class="label">👥</span>
+            <span class="enrolled-count">{{ $enrolledCount }} {{ __('inscritos') }}</span>
+        </div>
     </div>
+
+    @auth
+        @if(auth()->user()->role === 'student')
+            <div class="enroll-section">
+                @if($isEnrolled)
+                    <span class="enrolled-badge">✅ {{ __('Inscrito') }}</span>
+                    <form method="POST" action="{{ route('challenges.unenroll', $challenge['id']) }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="btn-unenroll">✕ {{ __('Desinscribirme') }}</button>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('challenges.enroll', $challenge['id']) }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="btn-enroll">📝 {{ __('Inscribirme al curso') }}</button>
+                    </form>
+                @endif
+            </div>
+        @endif
+    @endauth
 </section>
+
+@if(session('success'))
+    <div class="alert-success">{{ session('success') }}</div>
+@endif
 
 {{-- ── LESSONS LIST ── --}}
 <section class="lessons-section">

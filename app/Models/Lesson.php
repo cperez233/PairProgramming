@@ -18,6 +18,7 @@ class Lesson extends Model
         'order',
         'available',
         'content',
+        'moodle_assignment_id',
     ];
 
     protected $casts = [
@@ -28,5 +29,10 @@ class Lesson extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
     }
 }

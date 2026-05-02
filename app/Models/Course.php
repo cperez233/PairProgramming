@@ -32,4 +32,13 @@ class Course extends Model
     {
         return $this->lessons()->count();
     }
+
+    /**
+     * Students enrolled in this course (via pivot table).
+     */
+    public function enrolledStudents()
+    {
+        return $this->belongsToMany(User::class, 'course_student', 'course_id', 'student_id')
+                     ->withTimestamps();
+    }
 }

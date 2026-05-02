@@ -554,6 +554,7 @@
             <span class="nav-user">{{ auth()->user()->name }}</span>
             @if(auth()->user()->isTeacher())
                 <a href="{{ route('courses.index') }}" class="btn-nav-outline">{{ __('Manage Courses') }}</a>
+                <a href="{{ route('grades.index') }}" class="btn-nav-outline">{{ __('Calificaciones') }}</a>
             @endif
             <a href="{{ route('pair.index') }}" class="btn-nav-outline">{{ __('Sessions') }}</a>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
@@ -608,6 +609,9 @@
                 <span class="lessons-count">
                     📚 {{ $challenge->lessons_count }} {{ __('lessons') }}
                 </span>
+                @if(auth()->check() && auth()->user()->role === 'student' && !empty($challenge->is_enrolled))
+                    <span class="level-badge level-beginner" style="margin-left:auto;">✅ {{ __('Inscrito') }}</span>
+                @endif
             </div>
 
             <a href="{{ route('challenges.show', $challenge['id']) }}" class="btn-challenge" id="btn-challenge-{{ $challenge['id'] }}">
