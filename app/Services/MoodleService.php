@@ -100,23 +100,27 @@ class MoodleService
      */
     public function saveGrade(int $assignmentId, int $moodleUserId, float $grade, string $feedback = ''): array
     {
-        $result = $this->call('mod_assign_save_grades', [
-            'assignmentid'                => $assignmentId,
-            'applytoall'                  => 0,
-            'grades[0][userid]'           => $moodleUserId,
-            'grades[0][grade]'            => $grade,
-            'grades[0][attemptnumber]'    => -1,
-            'grades[0][addattempt]'       => 1,
-            'grades[0][workflowstate]'    => 'graded',
-            'grades[0][plugindata][assignfeedbackcomments_editor][text]'   => $feedback,
-            'grades[0][plugindata][assignfeedbackcomments_editor][format]' => 1,
-        ]);
-
-        // mod_assign_save_grades returns null on success
+        $params = [
+            'assignmentid'             => $assignmentId,
+            'applytoall'               => 0,
+            'grades[0][userid]'        => $moodleUserId,
+            'grades[0][grade]'         => $grade,
+            'grades[0][attemptnumber]' => -1,
+            'grades[0][addattempt]'    => 1,
+            'grades[0][workflowstate]' => 'graded',
+        ];
+    
+        if (!empty($feedback)) {
+            $params['grades[0][plugindata][assignfeedbackcomments_editor][text]']   = $feedback;
+            $params['grades[0][plugindata][assignfeedbackcomments_editor][format]'] = 1;
+        }
+    
+        $result = $this->call('mod_assign_save_grades', $params);
+    
         if (is_null($result) || empty($result)) {
             return ['success' => true];
         }
-
+    
         return $result;
-    }
+     }
 }
