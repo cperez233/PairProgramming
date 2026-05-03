@@ -68,7 +68,6 @@ class MoodleService
 
     /**
      * Get Moodle user ID by email address.
-     * Uses core_user_get_users_by_field.
      */
     public function getUserByEmail(string $email): ?int
     {
@@ -98,34 +97,23 @@ class MoodleService
 
     /**
      * Save a grade to Moodle.
-     *
-     * @param int    $assignmentId  Moodle assignment ID
-     * @param int    $moodleUserId  Moodle user ID
-     * @param float  $grade         Grade value (0-5 scale, will be sent as-is)
-     * @param string $feedback      Feedback comment
-     * @return array Response from Moodle or error array
      */
     public function saveGrade(int $assignmentId, int $moodleUserId, float $grade, string $feedback = ''): array
     {
-        $params = [
-            'assignmentid'  => $assignmentId,
-            'userid'        => $moodleUserId,
-            'grade'         => $grade,
-            'attemptnumber' => -1,
-            'addattempt'    => 0,
-            'workflowstate' => '',
-            'applytoall'    => 0,
-        ];
+        $result = $this->call('mod_assign_save_grades', [
+            'assignmentid'                => $assignmentId,
+            'applytoall'                  => 0,
+            'grades[0][userid]'           => $moodleUserId,
+            'grades[0][grade]'            => $grade,
+            'grades[0][attemptnumber]'    => -1,
+            'grades[0][addattempt]'       => 1,
+            'grades[0][workflowstate]'    => 'graded',
+            'grades[0][plugindata][assignfeedbackcomments_editor][text]'   => $feedback,
+            'grades[0][plugindata][assignfeedbackcomments_editor][format]' => 1,
+        ]);
 
-        if (!empty($feedback)) {
-            $params['plugindata[assignfeedbackcomments_editor][text]']   = $feedback;
-            $params['plugindata[assignfeedbackcomments_editor][format]'] = 1;
-        }
-
-        $result = $this->call('mod_assign_save_grade', $params);
-
-        // mod_assign_save_grade returns null on success
-        if (empty($result) || $result === null) {
+        // mod_assign_save_grades returns null on success
+        if (is_null($result) || empty($result)) {
             return ['success' => true];
         }
 
