@@ -41,12 +41,11 @@ class MoodleService
         error_log("Moodle call: $function to $url with token: " . substr($this->token, 0, 8) . "...");
 
         try {
-            $response = Http::asForm()
-                ->withHeaders(['ngrok-skip-browser-warning' => '1'])
-                ->post($url, array_merge([
-                    'wstoken'             => $this->token,
-                    'wsfunction'          => $function,
-                    'moodlewsrestformat'  => 'json',
+            $response = Http::withHeaders(['ngrok-skip-browser-warning' => '1'])
+                ->get($url, array_merge([
+                    'wstoken'            => $this->token,
+                    'wsfunction'         => $function,
+                    'moodlewsrestformat' => 'json',
                 ], $params));
 
             $data = $response->json();
@@ -109,18 +108,18 @@ class MoodleService
             'grades[0][addattempt]'    => 1,
             'grades[0][workflowstate]' => 'graded',
         ];
-    
+
         if (!empty($feedback)) {
             $params['grades[0][plugindata][assignfeedbackcomments_editor][text]']   = $feedback;
             $params['grades[0][plugindata][assignfeedbackcomments_editor][format]'] = 1;
         }
-    
+
         $result = $this->call('mod_assign_save_grades', $params);
-    
+
         if (is_null($result) || empty($result)) {
             return ['success' => true];
         }
-    
+
         return $result;
-     }
+    }
 }
