@@ -42,7 +42,8 @@ class MoodleService
 
         try {
             $response = Http::withHeaders(['ngrok-skip-browser-warning' => '1'])
-                ->get($url, array_merge([
+                ->asForm()
+                ->post($url, array_merge([
                     'wstoken'            => $this->token,
                     'wsfunction'         => $function,
                     'moodlewsrestformat' => 'json',
@@ -71,8 +72,8 @@ class MoodleService
     public function getUserByEmail(string $email): ?int
     {
         $result = $this->call('core_user_get_users_by_field', [
-            'field'      => 'email',
-            'values[0]'  => $email,
+            'field'  => 'email',
+            'values' => [$email],
         ]);
 
         if (isset($result['error'])) {
@@ -100,18 +101,26 @@ class MoodleService
     public function saveGrade(int $assignmentId, int $moodleUserId, float $grade, string $feedback = ''): array
     {
         $params = [
-            'assignmentid'             => $assignmentId,
-            'applytoall'               => 0,
-            'grades[0][userid]'        => $moodleUserId,
-            'grades[0][grade]'         => $grade,
-            'grades[0][attemptnumber]' => -1,
-            'grades[0][addattempt]'    => 1,
-            'grades[0][workflowstate]' => 'graded',
+            'assignmentid' => $assignmentId,
+            'applytoall'   => 0,
+            'grades'       => [
+                [
+                    'userid'        => $moodleUserId,
+                    'grade'         => $grade,
+                    'attemptnumber' => -1,
+                    'addattempt'    => 1,
+                    'workflowstate' => 'graded',
+                ]
+            ],
         ];
 
         if (!empty($feedback)) {
-            $params['grades[0][plugindata][assignfeedbackcomments_editor][text]']   = $feedback;
-            $params['grades[0][plugindata][assignfeedbackcomments_editor][format]'] = 1;
+            $params['grades'][0]['plugindata'] = [
+                'assignfeedbackcomments_editor' => [
+                    'text'   => $feedback,
+                    'format' => 1,
+                ]
+            ];
         }
 
         $result = $this->call('mod_assign_save_grades', $params);
