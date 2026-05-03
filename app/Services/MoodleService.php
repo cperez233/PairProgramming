@@ -18,11 +18,17 @@ class MoodleService
         $this->courseId = (int) config('moodle.course_id');
     }
 
+    /**
+     * Check if Moodle integration is configured.
+     */
     public function isConfigured(): bool
     {
         return !empty($this->baseUrl) && !empty($this->token);
     }
 
+    /**
+     * Make a REST API call to Moodle.
+     */
     protected function call(string $function, array $params = []): array
     {
         if (!$this->isConfigured()) {
@@ -35,11 +41,13 @@ class MoodleService
         error_log("Moodle call: $function to $url with token: " . substr($this->token, 0, 8) . "...");
 
         try {
-            $response = Http::asForm()->post($url, array_merge([
-                'wstoken'             => $this->token,
-                'wsfunction'          => $function,
-                'moodlewsrestformat'  => 'json',
-            ], $params));
+            $response = Http::asForm()
+                ->withHeaders(['ngrok-skip-browser-warning' => '1'])
+                ->post($url, array_merge([
+                    'wstoken'             => $this->token,
+                    'wsfunction'          => $function,
+                    'moodlewsrestformat'  => 'json',
+                ], $params));
 
             $data = $response->json();
 
@@ -58,6 +66,10 @@ class MoodleService
         }
     }
 
+    /**
+     * Get Moodle user ID by email address.
+     * Uses core_user_get_users_by_field.
+     */
     public function getUserByEmail(string $email): ?int
     {
         $result = $this->call('core_user_get_users_by_field', [
@@ -72,6 +84,9 @@ class MoodleService
         return !empty($result[0]['id']) ? (int) $result[0]['id'] : null;
     }
 
+    /**
+     * Get enrolled users for the configured course.
+     */
     public function getEnrolledUsers(?int $courseId = null): array
     {
         $cid = $courseId ?? $this->courseId;
@@ -81,6 +96,15 @@ class MoodleService
         ]);
     }
 
+    /**
+     * Save a grade to Moodle.
+     *
+     * @param int    $assignmentId  Moodle assignment ID
+     * @param int    $moodleUserId  Moodle user ID
+     * @param float  $grade         Grade value (0-5 scale, will be sent as-is)
+     * @param string $feedback      Feedback comment
+     * @return array Response from Moodle or error array
+     */
     public function saveGrade(int $assignmentId, int $moodleUserId, float $grade, string $feedback = ''): array
     {
         $params = [
@@ -100,6 +124,7 @@ class MoodleService
 
         $result = $this->call('mod_assign_save_grade', $params);
 
+        // mod_assign_save_grade returns null on success
         if (empty($result) || $result === null) {
             return ['success' => true];
         }
