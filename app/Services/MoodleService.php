@@ -18,24 +18,21 @@ class MoodleService
         $this->courseId = (int) config('moodle.course_id');
     }
 
-    /**
-     * Check if Moodle integration is configured.
-     */
     public function isConfigured(): bool
     {
         return !empty($this->baseUrl) && !empty($this->token);
     }
 
-    /**
-     * Make a REST API call to Moodle.
-     */
     protected function call(string $function, array $params = []): array
     {
         if (!$this->isConfigured()) {
+            error_log('Moodle not configured');
             return ['error' => 'Moodle is not configured.'];
         }
 
         $url = $this->baseUrl . '/webservice/rest/server.php';
+
+        error_log("Moodle call: $function to $url with token: " . substr($this->token, 0, 8) . "...");
 
         try {
             $response = Http::asForm()->post($url, array_merge([
@@ -46,31 +43,21 @@ class MoodleService
 
             $data = $response->json();
 
+            error_log("Moodle response: " . json_encode($data));
+
             if (isset($data['exception'])) {
-                Log::error('Moodle API error', [
-                    'function'  => $function,
-                    'exception' => $data['exception'],
-                    'message'   => $data['message'] ?? '',
-                    'errorcode' => $data['errorcode'] ?? '',
-                ]);
+                error_log("Moodle API error: " . json_encode($data));
                 return ['error' => $data['message'] ?? 'Unknown Moodle error'];
             }
 
             return $data ?? [];
 
         } catch (\Exception $e) {
-            Log::error('Moodle API connection error', [
-                'function' => $function,
-                'error'    => $e->getMessage(),
-            ]);
+            error_log("Moodle connection error: " . $e->getMessage());
             return ['error' => 'Connection error: ' . $e->getMessage()];
         }
     }
 
-    /**
-     * Get Moodle user ID by email address.
-     * Uses core_user_get_users_by_field.
-     */
     public function getUserByEmail(string $email): ?int
     {
         $result = $this->call('core_user_get_users_by_field', [
@@ -85,9 +72,6 @@ class MoodleService
         return !empty($result[0]['id']) ? (int) $result[0]['id'] : null;
     }
 
-    /**
-     * Get enrolled users for the configured course.
-     */
     public function getEnrolledUsers(?int $courseId = null): array
     {
         $cid = $courseId ?? $this->courseId;
@@ -97,15 +81,6 @@ class MoodleService
         ]);
     }
 
-    /**
-     * Save a grade to Moodle.
-     *
-     * @param int    $assignmentId  Moodle assignment ID
-     * @param int    $moodleUserId  Moodle user ID
-     * @param float  $grade         Grade value (0-5 scale, will be sent as-is)
-     * @param string $feedback      Feedback comment
-     * @return array Response from Moodle or error array
-     */
     public function saveGrade(int $assignmentId, int $moodleUserId, float $grade, string $feedback = ''): array
     {
         $params = [
@@ -120,12 +95,11 @@ class MoodleService
 
         if (!empty($feedback)) {
             $params['plugindata[assignfeedbackcomments_editor][text]']   = $feedback;
-            $params['plugindata[assignfeedbackcomments_editor][format]'] = 1; // HTML format
+            $params['plugindata[assignfeedbackcomments_editor][format]'] = 1;
         }
 
         $result = $this->call('mod_assign_save_grade', $params);
 
-        // mod_assign_save_grade returns null on success
         if (empty($result) || $result === null) {
             return ['success' => true];
         }
