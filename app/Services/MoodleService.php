@@ -38,7 +38,14 @@ class MoodleService
 
         $url = $this->baseUrl . '/webservice/rest/server.php';
 
+        $fullParams = array_merge([
+            'wstoken'            => $this->token,
+            'wsfunction'         => $function,
+            'moodlewsrestformat' => 'json',
+        ], $params);
+
         error_log("Moodle call: $function to $url with token: " . substr($this->token, 0, 8) . "...");
+        error_log("Moodle full params: " . json_encode($fullParams));
 
         try {
             $response = Http::withHeaders(['ngrok-skip-browser-warning' => '1'])
