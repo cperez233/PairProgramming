@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\GradeController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -22,6 +23,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/challenges', [ChallengeController::class , 'index'])->name('challenges.index');
     Route::get('/challenges/{id}', [ChallengeController::class , 'show'])->name('challenges.show');
     Route::get('/challenges/{id}/lesson/{lesson}', [ChallengeController::class , 'lesson'])->name('challenges.lesson');
+    Route::post('/challenges/{id}/enroll', [ChallengeController::class , 'enroll'])->name('challenges.enroll');
+    Route::post('/challenges/{id}/unenroll', [ChallengeController::class , 'unenroll'])->name('challenges.unenroll');
+    
+    // Teacher course management
+    Route::resource('courses', App\Http\Controllers\CourseController::class)->except(['show']);
+    Route::get('/lessons/{id}/edit', [App\Http\Controllers\LessonController::class, 'edit'])->name('lessons.edit');
+    Route::put('/lessons/{id}/content', [App\Http\Controllers\LessonController::class, 'updateContent'])->name('lessons.updateContent');
     Route::get('/app', [SessionController::class , 'index'])->name('pair.index');
     Route::post('/session/create', [SessionController::class , 'create'])->name('pair.create');
     Route::post('/session/join', [SessionController::class , 'join'])->name('pair.join');
@@ -39,7 +47,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/room/{code}/cursors', [SessionController::class , 'pollCursors'])->name('pair.cursors');
     Route::post('/room/{code}/thread', [SessionController::class , 'saveThread'])->name('pair.thread');
     Route::post('/room/{code}/chat', [SessionController::class , 'saveChat'])->name('pair.chat.save');
+    Route::post('/room/{code}/participant-chat', [SessionController::class , 'saveParticipantChat'])->name('pair.participant-chat.save');
     Route::get('/room/{code}/chat', [SessionController::class , 'loadChat'])->name('pair.chat.load');
+
+    // Teacher grading system
+    Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
+    Route::get('/grades/{courseId}', [GradeController::class, 'show'])->name('grades.show');
+    Route::post('/grades/store', [GradeController::class, 'store'])->name('grades.store');
+    Route::post('/grades/{id}/sync', [GradeController::class, 'sync'])->name('grades.sync');
+    Route::post('/grades/sync-all/{courseId}', [GradeController::class, 'syncAll'])->name('grades.syncAll');
 });
 
 Route::get('/lang/{locale}', function (string $locale) {
