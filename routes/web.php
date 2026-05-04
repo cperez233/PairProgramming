@@ -58,6 +58,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/grades/sync-all/{courseId}', [GradeController::class, 'syncAll'])->name('grades.syncAll');
 });
 
+Route::get('/seed-mvvm-secret-123', function () {
+    \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        '--class' => 'Database\\Seeders\\MvvmCourseSeeder',
+        '--force' => true
+    ]);
+    return '¡Seeder de MVVM ejecutado con exito en produccion!';
+});
+
 Route::get('/lang/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'es'])) {
         session(['locale' => $locale]);
