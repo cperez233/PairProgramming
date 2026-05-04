@@ -596,7 +596,7 @@
                 <div class="card-icon" style="border-color: {{ $challenge['color'] }}20;">
                     {{ $challenge['icon'] }}
                 </div>
-                <span class="card-number">#{{ str_pad($challenge['id'], 2, '0', STR_PAD_LEFT) }}</span>
+                <span class="card-number">#{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
             </div>
 
             <h3>{{ __($challenge['title']) }}</h3>

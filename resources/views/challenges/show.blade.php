@@ -664,8 +664,7 @@
             @else
                 <div class="lesson-card locked" data-index="{{ $loop->index }}">
             @endif
-
-                <div class="lesson-number">#{{ str_pad($lesson['id'], 2, '0', STR_PAD_LEFT) }}</div>
+                <div class="lesson-number">#{{ str_pad($lesson['order'], 2, '0', STR_PAD_LEFT) }}</div>
                 <div class="lesson-icon">{{ $lesson['icon'] }}</div>
                 <div class="lesson-info">
                     <div class="lesson-title">{{ __($lesson['title']) }}</div>
