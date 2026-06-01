@@ -143,9 +143,9 @@
                 @enderror
             </div>
 
-            <div class="form-group hidden" id="teacher_id_group">
-                <label for="teacher_id">{{ __('Teacher Verification ID') }}</label>
-                <input id="teacher_id" type="text" name="teacher_id" value="{{ old('teacher_id') }}">
+            <div class="form-group" id="teacher_id_group">
+                <label for="teacher_id" id="teacher_id_label">{{ __('Teacher Code (Optional)') }}</label>
+                <input id="teacher_id" type="text" name="teacher_id" value="{{ old('teacher_id') }}" placeholder="e.g. TCH-001">
                 @error('teacher_id')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -187,12 +187,15 @@
 <script>
     function toggleTeacherId() {
         const role = document.getElementById('role').value;
-        const teacherGroup = document.getElementById('teacher_id_group');
+        const teacherLabel = document.getElementById('teacher_id_label');
+        const teacherInput = document.getElementById('teacher_id');
+        
         if (role === 'teacher') {
-            teacherGroup.classList.remove('hidden');
+            teacherLabel.textContent = "{{ __('Teacher Verification ID') }}";
+            teacherInput.placeholder = "e.g. TCH-123";
         } else {
-            teacherGroup.classList.add('hidden');
-            document.getElementById('teacher_id').value = '';
+            teacherLabel.textContent = "{{ __('Teacher Code (Optional)') }}";
+            teacherInput.placeholder = "e.g. TCH-001";
         }
     }
 

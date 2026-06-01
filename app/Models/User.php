@@ -91,4 +91,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class, 'course_student', 'student_id', 'course_id')
                      ->withTimestamps();
     }
+
+    /**
+     * Teacher assigned to this student.
+     */
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
 }

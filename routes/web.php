@@ -56,6 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/grades/store', [GradeController::class, 'store'])->name('grades.store');
     Route::post('/grades/{id}/sync', [GradeController::class, 'sync'])->name('grades.sync');
     Route::post('/grades/sync-all/{courseId}', [GradeController::class, 'syncAll'])->name('grades.syncAll');
+
+    // Student-Teacher linking routes
+    Route::post('/student/link-teacher', [ChallengeController::class, 'linkTeacher'])->name('student.link-teacher');
+    Route::post('/student/unlink-teacher', [ChallengeController::class, 'unlinkTeacher'])->name('student.unlink-teacher');
 });
 
 Route::get('/seed-mvvm-secret-123', function () {

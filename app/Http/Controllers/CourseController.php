@@ -81,7 +81,14 @@ class CourseController extends Controller
         }
 
         $course = auth()->user()->courses()->with('lessons')->findOrFail($id);
-        return view('courses.edit', compact('course'));
+        
+        // Get all students linked to this teacher
+        $students = auth()->user()->students()->orderBy('name')->get();
+        
+        // Get IDs of students currently enrolled in this course
+        $enrolledStudentIds = $course->enrolledStudents()->pluck('users.id')->toArray();
+
+        return view('courses.edit', compact('course', 'students', 'enrolledStudentIds'));
     }
 
     public function update(Request $request, $id)
@@ -146,6 +153,15 @@ class CourseController extends Controller
             
             // Delete lessons that were removed
             $course->lessons()->whereNotIn('id', $existingLessonIds)->delete();
+
+            // Sync enrolled students
+            if ($request->has('students')) {
+                $linkedStudentIds = auth()->user()->students()->pluck('id')->toArray();
+                $validatedStudentIds = array_intersect($request->input('students', []), $linkedStudentIds);
+                $course->enrolledStudents()->sync($validatedStudentIds);
+            } else {
+                $course->enrolledStudents()->detach();
+            }
         });
 
         return redirect()->route('courses.index')->with('success', 'Course updated successfully.');

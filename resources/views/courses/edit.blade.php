@@ -267,6 +267,40 @@
                 + {{ __('Add Lesson') }}
             </button>
         </div>
+        <div class="form-section">
+            <div class="form-section-title">{{ __('Alumnos y Matrícula') }}</div>
+            
+            @if($students->count() > 0)
+                <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 16px;">
+                    {{ __('Selecciona los estudiantes que deseas matricular en este curso. Podrán verlo en su panel de inmediato.') }}
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    @foreach($students as $student)
+                        <label class="checkbox-label" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid rgba(255,255,255,0.03); transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #fff;">
+                                    {{ strtoupper(substr($student->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">{{ $student->name }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">{{ $student->email }}</div>
+                                </div>
+                            </div>
+                            <input type="checkbox" name="students[]" value="{{ $student->id }}" {{ in_array($student->id, $enrolledStudentIds) ? 'checked' : '' }} style="width: 20px; height: 20px; accent-color: var(--primary);">
+                        </label>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 24px; color: var(--text-dim);">
+                    <span style="font-size: 2rem; display: block; margin-bottom: 12px;">👥</span>
+                    <p style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 6px;">{{ __('Sin estudiantes vinculados aún') }}</p>
+                    <p style="font-size: 0.85rem; max-width: 400px; margin: 0 auto; line-height: 1.5;">
+                        {{ __('Comparte tu Código de Profesor con tus alumnos para que puedan vincular sus cuentas a la tuya:') }}
+                        <strong style="display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--primary); margin-top: 8px; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; border: 1px dashed rgba(99, 102, 241, 0.3);">{{ auth()->user()->teacher_id }}</strong>
+                    </p>
+                </div>
+            @endif
+        </div>
 
         <button type="submit" class="btn-primary">{{ __('Update Course') }}</button>
     </form>

@@ -82,5 +82,55 @@ class ChallengeController extends Controller
 
         return back()->with('success', 'Te has desinscrito del curso.');
     }
+
+    /**
+     * Link the current student to a teacher using a code.
+     */
+    public function linkTeacher(Request $request)
+    {
+        $user = auth()->user();
+
+        if ($user->role !== 'student') {
+            abort(403);
+        }
+
+        $request->validate([
+            'teacher_code' => 'required|string|max:50',
+        ]);
+
+        $teacher = \App\Models\User::where('role', 'teacher')
+            ->where('teacher_id', $request->teacher_code)
+            ->first();
+
+        if (!$teacher) {
+            return back()->withErrors([
+                'teacher_code' => __('The entered Teacher Code is invalid.')
+            ]);
+        }
+
+        $user->update([
+            'teacher_id' => $teacher->id
+        ]);
+
+        return back()->with('success', __('Successfully linked with your teacher!') . ' (' . $teacher->name . ')');
+    }
+
+    /**
+     * Unlink the current student from their teacher.
+     */
+    public function unlinkTeacher()
+    {
+        $user = auth()->user();
+
+        if ($user->role !== 'student') {
+            abort(403);
+        }
+
+        $user->update([
+            'teacher_id' => null
+        ]);
+
+        return back()->with('success', __('Successfully unlinked from your teacher.'));
+    }
 }
 

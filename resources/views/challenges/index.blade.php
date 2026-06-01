@@ -518,17 +518,143 @@
             }
         }
 
-        /* ── ENTRANCE ANIMATIONS ── */
-        .challenge-card {
-            opacity: 0;
-            transform: translateY(30px);
+        /* ── TEACHER LINKING WIDGET ── */
+        .teacher-linking-section {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 24px auto 0;
+            padding: 0 24px;
         }
 
-        .challenge-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.5s ease, transform 0.5s ease,
-                        border-color 0.3s, box-shadow 0.3s;
+        .teacher-linking-card {
+            background: rgba(10, 11, 22, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius);
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .teacher-linking-card:hover {
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 16px 48px rgba(99, 102, 241, 0.05);
+        }
+
+        .tl-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tl-icon {
+            font-size: 1.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .tl-text h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .tl-text p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .tl-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tl-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            width: 180px;
+            transition: border-color 0.2s;
+        }
+
+        .tl-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-tl-submit {
+            background: linear-gradient(135deg, var(--primary), var(--blue));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 10px 20px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-tl-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-tl-unlink {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            color: #f87171;
+            padding: 10px 16px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-tl-unlink:hover {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            .teacher-linking-card {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+            }
+            .tl-form {
+                width: 100%;
+            }
+            .tl-input {
+                flex: 1;
+                width: auto;
+            }
         }
     </style>
 </head>
@@ -587,6 +713,49 @@
         </div>
     </div>
 </section>
+
+@if(auth()->check() && auth()->user()->role === 'student')
+    @if($errors->has('teacher_code'))
+        <section class="teacher-linking-section">
+            <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; padding: 14px 20px; border-radius: 10px; font-weight: 600; font-size: 0.88rem; margin: 0 auto;">
+                ⚠️ {{ $errors->first('teacher_code') }}
+            </div>
+        </section>
+    @endif
+
+    <section class="teacher-linking-section">
+        @if(auth()->user()->teacher_id)
+            <div class="teacher-linking-card">
+                <div class="tl-info">
+                    <div class="tl-icon">🎓</div>
+                    <div class="tl-text">
+                        <h3>{{ __('Linked with your Teacher') }}</h3>
+                        <p>{{ __('You are connected with') }} <strong>{{ auth()->user()->teacher->name ?? __('your teacher') }}</strong>.</p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('student.unlink-teacher') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-tl-unlink">{{ __('Unlink Teacher') }}</button>
+                </form>
+            </div>
+        @else
+            <div class="teacher-linking-card">
+                <div class="tl-info">
+                    <div class="tl-icon">🎒</div>
+                    <div class="tl-text">
+                        <h3>{{ __('Connect with a Teacher') }}</h3>
+                        <p>{{ __('Enter your teacher\'s code to link your account and access their courses.') }}</p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('student.link-teacher') }}" class="tl-form" style="margin:0;">
+                    @csrf
+                    <input type="text" name="teacher_code" class="tl-input" placeholder="e.g. TCH-001" required>
+                    <button type="submit" class="btn-tl-submit">{{ __('Link Account') }}</button>
+                </form>
+            </div>
+        @endif
+    </section>
+@endif
 
 {{-- ── CHALLENGES GRID ── --}}
 <section class="challenges-grid" id="challengesGrid">
