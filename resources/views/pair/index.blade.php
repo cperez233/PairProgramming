@@ -435,27 +435,12 @@
 
 <div class="wrapper">
 
-<<<<<<< Updated upstream
-=======
-    <nav class="auth-nav" aria-label="Account">
-        <div class="lang-switch" style="margin-right: auto; display: flex; gap: 8px; align-items: center; border:none; padding: 0;">
-            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--green)' : 'var(--text-dim)' }}; border:none; text-decoration: none; font-weight: bold; font-size: 0.8rem; padding: 0; background: transparent;">EN</a>
-            <span style="color: var(--border);">/</span>
-            <a href="{{ route('lang.switch', 'es') }}" style="color: {{ app()->getLocale() === 'es' ? 'var(--green)' : 'var(--text-dim)' }}; border:none; text-decoration: none; font-weight: bold; font-size: 0.8rem; padding: 0; background: transparent;">ES</a>
-        </div>
-        @auth
-            <span class="auth-nav-user">{{ auth()->user()->name }}</span>
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0;">
-                @csrf
-                <button type="submit">{{ __('Log out') }}</button>
-            </form>
-        @else
-            <a href="{{ route('login') }}">{{ __('Log in') }}</a>
-            <a href="{{ route('register') }}" class="auth-nav-primary">{{ __('Register') }}</a>
-        @endauth
-    </nav>
+    <div class="lang-switch" style="position: absolute; top: 24px; right: 24px; display: flex; gap: 8px; align-items: center;">
+        <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--green)' : 'var(--text-dim)' }}; text-decoration: none; font-weight: bold; font-size: 0.8rem;">EN</a>
+        <span style="color: var(--border);">/</span>
+        <a href="{{ route('lang.switch', 'es') }}" style="color: {{ app()->getLocale() === 'es' ? 'var(--green)' : 'var(--text-dim)' }}; text-decoration: none; font-weight: bold; font-size: 0.8rem;">ES</a>
+    </div>
 
->>>>>>> Stashed changes
     <header>
         <div class="logo">
             <div class="logo-icon">⌨</div>
